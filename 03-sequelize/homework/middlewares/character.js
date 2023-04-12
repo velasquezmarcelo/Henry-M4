@@ -21,4 +21,33 @@ router.post('/', async (req, res) => {
     }    
 });
 
+router.get('/', async (req, res) => {
+    const { race } = req.query;
+    const attributes = Object.keys(req.query);
+
+    try {
+        const results = race
+        ? await Character.findAll({where: { race } })
+        : await Character.findAll({  });
+
+        return res.status(200).json(results);
+    } catch (error) {
+        res.status(404).send(error.message);
+    }  
+});
+
+router.get('/:code', async (req, res) => {
+    const { code } = req.params;
+    try {
+        const character = await Character.findByPk(code);
+        if (!character) throw Error;
+        return res.status(200).json(character);
+    } catch (error) {
+
+        return res
+            .status(404)
+            .send(`El código ${code} no corresponde a un personaje existente`);
+    }
+})
+
 module.exports = router;
